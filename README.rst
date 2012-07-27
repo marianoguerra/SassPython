@@ -37,10 +37,6 @@ if no options provided read from stdin::
 
         table.hl td.ln {
           text-align: right; }
-        ➜  src  ./sass.py -f ../examples/simple.scss -d ~
-        usage: sass.py [-h] [-f FILE_PATH | -d DIR_PATH]
-        sass.py: error: argument -d/--dir: not allowed with argument -f/--file
-        ➜  src  
 
 from a file::
 
@@ -64,6 +60,12 @@ from a folder:
         # I think it doesn't work, never used sass before and don't know what
         # this means :)
         ➜  src  ./sass.py -d ../examples/
+
+you can't chew gum and walk at the same time::
+
+        ➜  src  ./sass.py -f ../examples/simple.scss -d ~
+        usage: sass.py [-h] [-f FILE_PATH | -d DIR_PATH]
+        sass.py: error: argument -d/--dir: not allowed with argument -f/--file
 
 code
 ....
