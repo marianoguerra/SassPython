@@ -1,10 +1,20 @@
 #!/usr/bin/env python
 from ctypes import *
+from ctypes.util import find_library
 
 import sys
 import argparse
+import os.path
 
-LIB = cdll.LoadLibrary("/usr/local/lib/libsass.so")
+for lib in 'libsass.so', 'libsass.dylib':
+    try:
+        LIB = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__), lib))
+    except OSError:
+        continue
+    else:
+        break
+else:
+    LIB = cdll.LoadLibrary(find_library("libsass"))
 
 class Style():
     # define SASS_STYLE_NESTED     0
