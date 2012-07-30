@@ -13,8 +13,8 @@ for lib in 'libsass.so', 'libsass.dylib':
             LIB = cdll.LoadLibrary(lib)
         except OSError:
             continue
-    else:
-        break
+        else:
+            break
 else:
     LIB = cdll.LoadLibrary(find_library("libsass"))
 
