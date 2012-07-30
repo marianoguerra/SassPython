@@ -90,6 +90,7 @@ class build_libsass(distutils.cmd.Command):
                         copy(f, f2)
         log.info("Removing the source tree...")
         shutil.rmtree(dirname)
+        self.distribution.data_files.extend(self.data_files)
 
 
 setup(
