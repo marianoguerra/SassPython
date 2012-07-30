@@ -7,10 +7,12 @@ import argparse
 import os.path
 
 for lib in 'libsass.so', 'libsass.dylib':
-    try:
-        LIB = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__), lib))
-    except OSError:
-        continue
+    lib = os.path.join(os.path.dirname(__file__), lib)
+    if os.path.isfile(lib):
+        try:
+            LIB = cdll.LoadLibrary(lib)
+        except OSError:
+            continue
     else:
         break
 else:
