@@ -4,8 +4,9 @@ import distutils.cmd
 import distutils.log
 import os
 import os.path
-import subprocess
 import shutil
+import subprocess
+import sys
 import tarfile
 import tempfile
 import urllib2
@@ -21,6 +22,12 @@ try:
         readme = f.read()
 except IOError:
     readme = None
+
+
+if sys.version_info < (2, 7, 0):
+    install_requires = ['argparse']
+else:
+    install_requires = []
 
 
 def copy(source, destination):
@@ -107,5 +114,6 @@ setup(
     author='Mariano Guerra',
     author_email='luismarianoguerra' '@' 'gmail.com',
     url='https://github.com/marianoguerra/SassPython',
-    cmdclass={'build_libsass': build_libsass}
+    cmdclass={'build_libsass': build_libsass},
+    install_requires=install_requires
 )
