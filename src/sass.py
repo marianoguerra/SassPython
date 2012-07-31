@@ -78,13 +78,6 @@ class FileContext(Structure):
     };
     """
 
-    def init(self, input_path=""):
-        self.input_path = input_path
-        self.output_string = ""
-        self.options = Options()
-        self.error_status = 0
-        self.error_message = ""
-
     _fields_ = [
         ("input_path", c_char_p),
         ("output_string", c_char_p),
@@ -92,6 +85,13 @@ class FileContext(Structure):
         ("error_status", c_int),
         ("error_message", c_char_p)
     ]
+
+    def init(self, input_path=""):
+        self.input_path = input_path
+        self.output_string = ""
+        self.options = Options()
+        self.error_status = 0
+        self.error_message = ""
 
 class FolderContext(Structure):
     """
@@ -104,13 +104,6 @@ class FolderContext(Structure):
     };
     """
 
-    def init(self, search_path=""):
-        self.search_path = search_path
-        self.output_string = ""
-        self.options = Options()
-        self.error_status = 0
-        self.error_message = ""
-
     _fields_ = [
         ("search_path", c_char_p),
         ("output_string", c_char_p),
@@ -119,13 +112,23 @@ class FolderContext(Structure):
         ("error_message", c_char_p)
     ]
 
+    def init(self, search_path=""):
+        self.search_path = search_path
+        self.output_string = ""
+        self.options = Options()
+        self.error_status = 0
+        self.error_message = ""
+
 _new_context = LIB.sass_new_context
+_new_context.argtypes = []
 _new_context.restype = Context
 
 _new_file_context = LIB.sass_new_file_context
+_new_file_context.argtypes = []
 _new_file_context.restype = FileContext
 
 _new_folder_context = LIB.sass_new_folder_context
+_new_folder_context.argtypes = []
 _new_folder_context.restype = FolderContext
 
 _free_context = LIB.sass_free_context
