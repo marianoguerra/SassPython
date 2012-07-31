@@ -124,7 +124,6 @@ what's left to do?
 ------------------
 
 * lookup libsass more inteligently
-* python 3 support (should be easy)
 * make the folder stuff work
 * add command line options to specify option styles
 * see what the return value of the compile_* means and use it if needed
