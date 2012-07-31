@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from ctypes import *
+import ctypes.util
 
 import sys
 
@@ -15,7 +16,12 @@ else:
 
 import argparse
 
-LIB = cdll.LoadLibrary("/usr/local/lib/libsass.so")
+LIB_PATH = ctypes.util.find_library("sass")
+
+if LIB_PATH is None:
+    raise LookupError("couldn't find path to libsass")
+
+LIB = cdll.LoadLibrary(LIB_PATH)
 
 class Style():
     # define SASS_STYLE_NESTED     0
