@@ -128,6 +128,11 @@ python 3::
 
         sudo python3 setup.py install
 
+using pip
+.........
+
+        sudo pip install SassPython
+
 license?
 --------
 
