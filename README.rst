@@ -114,6 +114,19 @@ from a folder::
         # ???
         # Profit!
 
+how to install?
+---------------
+
+from sources
+............
+
+python 2::
+
+        sudo python2 setup.py install
+
+python 3::
+
+        sudo python3 setup.py install
 
 license?
 --------
