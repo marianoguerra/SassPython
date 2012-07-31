@@ -123,7 +123,6 @@ MIT + optional beer for the creator
 what's left to do?
 ------------------
 
-* lookup libsass more inteligently
 * make the folder stuff work
 * add command line options to specify option styles
 * see what the return value of the compile_* means and use it if needed
