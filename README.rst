@@ -114,6 +114,26 @@ from a folder::
         # ???
         # Profit!
 
+how to install?
+---------------
+
+from sources
+............
+
+python 2::
+
+        sudo python2 setup.py install
+
+python 3::
+
+        sudo python3 setup.py install
+
+using pip
+.........
+
+::
+
+        sudo pip install SassPython
 
 license?
 --------
@@ -123,8 +143,6 @@ MIT + optional beer for the creator
 what's left to do?
 ------------------
 
-* lookup libsass more inteligently
-* python 3 support (should be easy)
 * make the folder stuff work
 * add command line options to specify option styles
 * see what the return value of the compile_* means and use it if needed

@@ -3,20 +3,38 @@ from ctypes import *
 from ctypes.util import find_library
 
 import sys
+
+ENCODING = 'utf-8'
+if sys.version_info[0] == 3:
+    to_char_array = lambda s: bytes(s, ENCODING)
+    to_string = lambda x: x.decode(ENCODING)
+    EMPTY_STRING = bytes()
+else:
+    to_char_array = lambda x: x
+    to_string = lambda x: x
+    EMPTY_STRING = ""
+
 import argparse
 import os.path
 
+
 for lib in 'libsass.so', 'libsass.dylib':
-    lib = os.path.join(os.path.dirname(__file__), lib)
+    LIB_PATH = os.path.join(os.path.dirname(__file__), lib)
     if os.path.isfile(lib):
         try:
-            LIB = cdll.LoadLibrary(lib)
+            LIB = cdll.LoadLibrary(LIB_PATH)
         except OSError:
             continue
         else:
             break
 else:
-    LIB = cdll.LoadLibrary(find_library("libsass"))
+    LIB_PATH = find_library("libsass")
+
+    if LIB_PATH is None:
+        raise LookupError("couldn't find path to libsass")
+
+    LIB = cdll.LoadLibrary(LIB_PATH)
+
 
 class Style():
     # define SASS_STYLE_NESTED     0
@@ -39,7 +57,7 @@ class Options(Structure):
 
     def __init__(self, output_style=Style.NESTED, include_paths=""):
         self.output_style = output_style
-        self.include_paths = include_paths
+        self.include_paths = to_char_array(include_paths)
 
     _fields_ = [
         ("output_style", c_int),
@@ -66,11 +84,11 @@ class Context(Structure):
     ]
 
     def init(self, source_string=""):
-        self.source_string = source_string
-        self.output_string = ""
+        self.source_string = to_char_array(source_string)
+        self.output_string = EMPTY_STRING
         self.options = Options()
         self.error_status = 0
-        self.error_message = ""
+        self.error_message = EMPTY_STRING
 
     def __str__(self):
         return '<context source="{source_string} output="{output_string}" status="{error_status}" error="{error_message}>"'.format(
@@ -90,13 +108,6 @@ class FileContext(Structure):
     };
     """
 
-    def init(self, input_path=""):
-        self.input_path = input_path
-        self.output_string = ""
-        self.options = Options()
-        self.error_status = 0
-        self.error_message = ""
-
     _fields_ = [
         ("input_path", c_char_p),
         ("output_string", c_char_p),
@@ -104,6 +115,13 @@ class FileContext(Structure):
         ("error_status", c_int),
         ("error_message", c_char_p)
     ]
+
+    def init(self, input_path=""):
+        self.input_path = to_char_array(input_path)
+        self.output_string = EMPTY_STRING
+        self.options = Options()
+        self.error_status = 0
+        self.error_message = EMPTY_STRING
 
 class FolderContext(Structure):
     """
@@ -116,13 +134,6 @@ class FolderContext(Structure):
     };
     """
 
-    def init(self, search_path=""):
-        self.search_path = search_path
-        self.output_string = ""
-        self.options = Options()
-        self.error_status = 0
-        self.error_message = ""
-
     _fields_ = [
         ("search_path", c_char_p),
         ("output_string", c_char_p),
@@ -131,13 +142,23 @@ class FolderContext(Structure):
         ("error_message", c_char_p)
     ]
 
+    def init(self, search_path=""):
+        self.search_path = to_char_array(search_path)
+        self.output_string = EMPTY_STRING
+        self.options = Options()
+        self.error_status = 0
+        self.error_message = EMPTY_STRING
+
 _new_context = LIB.sass_new_context
+_new_context.argtypes = []
 _new_context.restype = Context
 
 _new_file_context = LIB.sass_new_file_context
+_new_file_context.argtypes = []
 _new_file_context.restype = FileContext
 
 _new_folder_context = LIB.sass_new_folder_context
+_new_folder_context.argtypes = []
 _new_folder_context.restype = FolderContext
 
 _free_context = LIB.sass_free_context
@@ -170,7 +191,7 @@ def compile(scss):
     if ctx.error_status:
         return False, ctx.error_message
     else:
-        return True, ctx.output_string
+        return True, to_string(ctx.output_string)
 
 def compile_path(path):
     """
@@ -187,7 +208,7 @@ def compile_path(path):
     if fctx.error_status:
         return False, fctx.error_message
     else:
-        return True, fctx.output_string
+        return True, to_string(fctx.output_string)
 
 def compile_folder(path):
     """
@@ -205,7 +226,7 @@ def compile_folder(path):
     if dctx.error_status:
         return False, dctx.error_message
     else:
-        return True, dctx.output_string
+        return True, to_string(dctx.output_string)
 
 def build_arg_parser():
     """return an argument parser object"""
