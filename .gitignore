@@ -2,3 +2,6 @@
 MANIFEST
 build
 dist
+src/SassPython.egg-info
+src/*.so
+src/*.dylib
