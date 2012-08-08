@@ -138,15 +138,15 @@ class FolderContext(Structure):
 
 _new_context = LIB.sass_new_context
 _new_context.argtypes = []
-_new_context.restype = Context
+_new_context.restype = POINTER(Context)
 
 _new_file_context = LIB.sass_new_file_context
 _new_file_context.argtypes = []
-_new_file_context.restype = FileContext
+_new_file_context.restype = POINTER(FileContext)
 
 _new_folder_context = LIB.sass_new_folder_context
 _new_folder_context.argtypes = []
-_new_folder_context.restype = FolderContext
+_new_folder_context.restype = POINTER(FolderContext)
 
 _free_context = LIB.sass_free_context
 _free_context.argtypes = [POINTER(Context)]
@@ -170,7 +170,7 @@ def compile(scss):
     the content as second (the error message if status is False, compiled style
     if True)
     """
-    ctx = _new_context()
+    ctx = _new_context().contents
     ctx.init(scss)
 
     result = _compile(ctx)
@@ -187,7 +187,7 @@ def compile_path(path):
     the content as second (the error message if status is False, compiled style
     if True)
     """
-    fctx = _new_file_context()
+    fctx = _new_file_context().contents
     fctx.init(path)
 
     result = _compile_file(fctx)
@@ -205,7 +205,7 @@ def compile_folder(path):
     if True)
     """
 
-    dctx = _new_folder_context()
+    dctx = _new_folder_context().contents
     dctx.init(path)
 
     result = _compile_folder(dctx)
