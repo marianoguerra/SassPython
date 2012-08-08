@@ -96,7 +96,7 @@ class build_libsass(distutils.cmd.Command):
 
 setup(
     name='SassPython',
-    version='0.2.0',
+    version='0.2.1',
     py_modules=['sass'],
     package_dir={'': 'src'},
     data_files=[
