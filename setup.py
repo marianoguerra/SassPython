@@ -30,15 +30,6 @@ else:
     install_requires = []
 
 
-def copy(source, destination):
-    while 1:
-        chunk = source.read(4096)
-        if chunk:
-            destination.write(chunk)
-        else:
-            break
-
-
 class build_libsass(distutils.cmd.Command):
     """Download the source tarball of libsass and then build it."""
 
@@ -72,7 +63,7 @@ class build_libsass(distutils.cmd.Command):
         log.info(self.url)
         response = urllib2.urlopen(self.url)
         tmp = tempfile.TemporaryFile()
-        copy(response, tmp)
+        shutil.copyfileobj(response, tmp)
         log.info("Extracting libsass source tarball...")
         response.close()
         tmp.seek(0)
@@ -94,7 +85,7 @@ class build_libsass(distutils.cmd.Command):
                     dst_name = os.path.join('build', filename)
                     self.data_files.add(dst_name)
                     with open(dst_name, 'wb') as f2:
-                        copy(f, f2)
+                        shutil.copyfileobj(f, f2)
         log.info("Removing the source tree...")
         shutil.rmtree(dirname)
         self.distribution.data_files.extend(self.data_files)
