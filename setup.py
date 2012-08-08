@@ -1,15 +1,18 @@
 from __future__ import absolute_import
 
-import distutils.cmd
-import distutils.log
 import os
-import os.path
-import shutil
-import subprocess
 import sys
+import shutil
 import tarfile
 import tempfile
-import urllib2
+import subprocess
+import distutils.cmd
+import distutils.log
+
+if sys.version_info[0] == 2:
+    import urllib2
+else:
+    import urllib as urllib2
 
 try:
     from setuptools import setup
