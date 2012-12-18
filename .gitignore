@@ -5,3 +5,4 @@ dist
 src/SassPython.egg-info
 src/*.so
 src/*.dylib
+*.swp

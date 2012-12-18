@@ -14,7 +14,6 @@ else:
     to_string = lambda x: x
     EMPTY_STRING = ""
 
-import argparse
 import os.path
 
 
@@ -28,7 +27,7 @@ for lib in 'libsass.so', 'libsass.dylib':
         else:
             break
 else:
-    LIB_PATH = find_library("libsass")
+    LIB_PATH = find_library("sass")
 
     if LIB_PATH is None:
         raise LookupError("couldn't find path to libsass")
@@ -136,15 +135,15 @@ class FolderContext(Structure):
 
     _fields_ = [
         ("search_path", c_char_p),
-        ("output_string", c_char_p),
+        ("output_path", c_char_p),
         ("options", Options),
         ("error_status", c_int),
         ("error_message", c_char_p)
     ]
 
-    def init(self, search_path=""):
+    def init(self, search_path="", output_path=""):
         self.search_path = to_char_array(search_path)
-        self.output_string = EMPTY_STRING
+        self.output_path = to_char_array(output_path)
         self.options = Options()
         self.error_status = 0
         self.error_message = EMPTY_STRING
@@ -210,34 +209,48 @@ def compile_path(path):
     else:
         return True, to_string(fctx.output_string)
 
-def compile_folder(path):
+# ARGH! This is not implemented in libsass!!
+# https://github.com/hcatlin/libsass/blob/master/sass_interface.cpp#L158
+#  int sass_compile_folder(sass_folder_context* c_ctx)
+#  {
+#    return 1;
+#  }
+def compile_folder(inpath, outpath):
     """
-    compile sass code contained in a folder at *path* (a string)
-    return a tuple with the status as a boolean as first item and
-    the content as second (the error message if status is False, compiled style
-    if True)
+    Compiles sass files from a folder into another folder.
+
+    .. warning:: This is not implemented in ``libsass``, so it will
+        not work!
+
+    :param inpath: Folder with the ``scss`` files to compile.
+    :param outpath: Folder where the compiled files are stored.
+    :returns: 2-tuple: on success (True, ''), on error (False, errmsg)
     """
 
+    raise NotImplementedError("libsass has not implemented compiling a folder")
+
     dctx = _new_folder_context().contents
-    dctx.init(path)
+    dctx.init(inpath, outpath)
 
     result = _compile_folder(dctx)
 
     if dctx.error_status:
         return False, dctx.error_message
     else:
-        return True, to_string(dctx.output_string)
+        return True, ''
 
 def build_arg_parser():
     """return an argument parser object"""
+    import argparse
     parser = argparse.ArgumentParser()
 
-    group = parser.add_mutually_exclusive_group()
-
-    group.add_argument('-f', '--file', type=str, default=None, dest="file_path",
+    # FIXME  Implement mutex(-f, (-i, -o))
+    parser.add_argument('-f', '--file', type=str, default=None, dest="file_path",
         help="file to convert")
-    group.add_argument('-d', '--dir', type=str, default=None, dest="dir_path",
+    parser.add_argument('-i', '--inpath', type=str, default=None, dest="inpath",
         help="directory to convert")
+    parser.add_argument('-o', '--outpath', type=str, default=None, dest="outpath",
+        help="directory to save the converted files")
 
     return parser
 
@@ -248,8 +261,8 @@ def main():
 
     if opts.file_path is not None:
         ok, out = compile_path(opts.file_path)
-    elif opts.dir_path is not None:
-        ok, out = compile_folder(opts.dir_path)
+    elif opts.inpath is not None:
+        ok, out = compile_folder(opts.inpath, opts.outpath)
     else:
         ok, out = compile(sys.stdin.read())
 
